@@ -1,0 +1,60 @@
+{
+  "label": {
+    "menu":"Shopify Products Update",
+    "requestShopifyProductsUpdate": "Request Product Update for <em>{{displayName}}</em>",
+    "settings": {
+      "title": "Shopify Products Update setting"
+    },
+    "action": {
+      "title": "Shopify Products Update - How to extend the ui ?"
+    },
+    "appsAccordion": {
+      "title": "Shopify Products Update"
+    }
+  },
+  "automatedTextTags": {
+    "title": "Automated tags",
+    "objectsList": "Objects list",
+    "action": {
+      "getObjects": "Get objects",
+      "tagImage": "Tag image"
+    },
+    "tagsField": {
+      "help": "Add tags by pressing Enter. To separate tags use a comma.",
+      "loading": "Loading",
+      "tag": "Auto Tag Content",
+      "empty": "No tags were found"
+    },
+    "fileUpload": {
+      "tag": "tag",
+      "tags": "tags"
+    }
+  },
+  "automatedInterests": {
+    "displayValue": "jExperience Interests",
+    "title": "Automated Interests",
+    "objectsList": "Objects list",
+    "action": {
+      "getObjects": "Get objects",
+      "tagImage": "Tag image"
+    },
+    "tagsField": {
+      "help": "Add interests:weight (finance:50) by pressing Enter.",
+      "loading": "Loading",
+      "tag": "Auto Add Interests",
+      "empty": "No interests were found",
+      "placeholder": "Type to add interests"
+    },
+    "fileUpload": {
+      "tag": "tag",
+      "tags": "tags"
+    }
+  },
+  "header": "Configure AWS Bedrock Generative AI for {{siteName}}",
+  "heading": "AWS Bedrock Prompt (Automated Tags Generation)",
+  "description": "AWS Bedrock Generative AI is a fully managed suite of services designed by Amazon Web Services to help developers and enterprises build, deploy, and scale generative AI applications efficiently.",
+  "save": "Save and Publish",
+  "notification": {
+    "save": "The prompt file has been saved and it is being published."
+  }
+}

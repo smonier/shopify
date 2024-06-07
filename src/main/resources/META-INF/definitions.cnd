@@ -1,0 +1,11 @@
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
+<shopifynt = 'http://www.jahia.org/shopify/nt/1.0'>
+<shopifymix = 'http://www.jahia.org/shopify/mix/1.0'>
+
+[shopifymix:shopifyProductsManagement] > jmix:droppableContent, jmix:editorialContent mixin
+
+[shopifynt:productsList] > jnt:content, jmix:mainResource, mix:title, jmix:structuredContent, shopifymix:shopifyProductsManagement
+- shopName (String) multiple
+- description (string, richtext[ckeditor.toolbar='Tinny',ckeditor.customConfig='$context/modules/industrial/javascript/ckeditor/config/body.js']) internationalized
+- csvFile (weakreference, picker[type='jnt:file'])

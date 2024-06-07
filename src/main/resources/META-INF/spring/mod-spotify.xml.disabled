@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+
+    <bean id="httpServiceListener" class="org.jahia.se.modules.shopify.servlets.HttpServiceListener">
+        <property name="servlets">
+            <map>
+                <entry key="authorize">
+                    <bean id="ShopifyAuthorizeServlet"
+                        class="org.jahia.se.modules.shopify.servlets.ShopifyAuthorizeServlet">
+                    </bean>
+                </entry>
+                <entry key="callback">
+                    <bean id="ShopifyCallbackServlet"
+                        class="org.jahia.se.modules.shopify.servlets.ShopifyCallbackServlet">
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <osgi:reference id="httpService" interface="org.osgi.service.http.HttpService">
+        <osgi:listener ref="httpServiceListener" bind-method="onBind" unbind-method="onUnbind" />
+    </osgi:reference>
+
+</beans>
