@@ -78,8 +78,7 @@ $(".csvTable").each(function () {
                 groupBy:["id"],
                 paginationCounter: "rows",
                 columns: [
-                    { formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
-                    { title: "id", field: "id" , responsive:0, headerFilter:"input"}, //column has a fixed width of 100px;
+                    { title: "id", field: "id" }, //column has a fixed width of 100px;
                     { title: "title", field: "title" }, //column has a fixed width of 100px;
                     { title: "body_html", field: "body_html" }, //column has a fixed width of 100px;
                     { title: "vendor", field: "vendor" }, //column has a fixed width of 100px;

@@ -3,7 +3,6 @@ package org.jahia.se.modules.shopify.actions;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -120,6 +119,8 @@ public class RequestShopifyProductsUpdate extends Action {
                     String product_type = values[4];
                     String price = values[5];
                     String inventory_quantity = values[6];
+                    String action = values[7];
+
 
                     // Create product data map
                     Map<String, Object> productData = new HashMap<>();
@@ -143,7 +144,22 @@ public class RequestShopifyProductsUpdate extends Action {
                     // Update the product on Shopify
                     for (String shop : shopNameList) {
                         LOGGER.info("Shop Update: " + shop);
-                        shopifyService.updateProduct(shop, id, productDataJson);
+                        switch (action.toLowerCase()) {
+                            case "create":
+                                shopifyService.createProduct(shop, productDataJson);
+                                break;
+                            case "read":
+                                shopifyService.getProducts(shop);
+                                break;
+                            case "update":
+                                shopifyService.updateProduct(shop, id, productDataJson);
+                                break;
+                            case "delete":
+                                shopifyService.deleteProduct(shop, id);
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid action: " + action);
+                        }
                     }
                     resultCode = HttpServletResponse.SC_OK;
                 } else {
