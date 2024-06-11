@@ -1,22 +1,32 @@
 package org.jahia.se.modules.shopify.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 import java.util.List;
 
 public class Product {
     private long id;
     private String title;
+    @JsonProperty("body_html")
     private String bodyHtml;
     private String vendor;
+    @JsonProperty("product_type")
     private String productType;
+    @JsonProperty("created_at")
     private Date createdAt;
     private String handle;
+    @JsonProperty("updated_at")
     private Date updatedAt;
+    @JsonProperty("published_at")
     private Date publishedAt;
+    @JsonProperty("template_suffix")
     private String templateSuffix;
+    @JsonProperty("published_scope")
     private String publishedScope;
     private String tags;
     private String status;
+    @JsonProperty("admin_graphql_api_id")
     private String adminGraphqlApiId;
     private List<Variant> variants;
     private List<Option> options;
@@ -171,30 +181,44 @@ public class Product {
     // Nested classes
     public static class Variant {
         private long id;
-        private long product_id;
+        @JsonProperty("product_id")
+        private long productId;
         private String title;
         private String price;
         private String sku;
         private int position;
+        @JsonProperty("inventory_policy")
         private String inventoryPolicy;
+        @JsonProperty("compare_at_price")
         private String compareAtPrice;
+        @JsonProperty("fulfillment_service")
         private String fulfillmentService;
+        @JsonProperty("inventory_management")
         private String inventoryManagement;
         private String option1;
         private String option2;
         private String option3;
+        @JsonProperty("created_at")
         private Date createdAt;
+        @JsonProperty("updated_at")
         private Date updatedAt;
         private boolean taxable;
         private String barcode;
         private int grams;
         private double weight;
+        @JsonProperty("weight_unit")
         private String weightUnit;
+        @JsonProperty("inventory_item_id")
         private long inventoryItemId;
+        @JsonProperty("inventory_quantity")
         private int inventoryQuantity;
+        @JsonProperty("old_inventory_quantity")
         private int oldInventoryQuantity;
+        @JsonProperty("requires_shipping")
         private boolean requiresShipping;
+        @JsonProperty("admin_graphql_api_id")
         private String adminGraphqlApiId;
+        @JsonProperty("image_id")
         private String imageId;
 
         // Getters and setters
@@ -207,11 +231,11 @@ public class Product {
         }
 
         public long getProductId() {
-            return product_id;
+            return productId;
         }
 
-        public void setProductId(long product_id) {
-            this.product_id = product_id;
+        public void setProductId(long productId) {
+            this.productId = productId;
         }
 
         public String getTitle() {

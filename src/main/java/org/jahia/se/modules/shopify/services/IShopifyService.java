@@ -8,6 +8,7 @@ import org.osgi.service.cm.ConfigurationException;
 public interface IShopifyService {
 
     String getProducts(String shop) throws IOException;
+    String getProductsFromHandle(String shop, String handle) throws IOException;
 
     String createProduct(String shop, String productJson) throws IOException;
 
@@ -17,8 +18,4 @@ public interface IShopifyService {
 
     void updated(Dictionary<String, ?> dictionary) throws ConfigurationException;
 
-    void updateMetafield(String shopName, String productId, String metafieldId, String value, String type) throws Exception;
-
-    void createMetafield(String shopName, String productId, String namespace, String key, String value, String type) throws Exception;
-
-    }
+}

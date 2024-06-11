@@ -28,6 +28,12 @@ public class ShopifyService implements IShopifyService, ManagedService {
     }
 
     @Override
+    public String getProductsFromHandle(String shop, String handle) throws IOException {
+        String urlStr = "https://" + shop + ".myshopify.com/admin/products.json?handle="+handle;
+        return sendRequest(shop, urlStr, "GET", null);
+    }
+
+    @Override
     public String createProduct(String shop, String productJson) throws IOException {
         String urlStr = "https://" + shop + ".myshopify.com/admin/products.json";
         return sendRequest(shop, urlStr, "POST", productJson);
@@ -45,86 +51,6 @@ public class ShopifyService implements IShopifyService, ManagedService {
         return sendRequest(shop, urlStr, "DELETE", null);
     }
 
-    @Override
-    public void updateMetafield(String shop, String productId, String metafieldId, String value, String type) throws Exception {
-        String accessToken = getValue(shop);
-
-        // Create JSON payload
-        String jsonPayload = String.format(
-                "{\"metafield\":{\"id\":%s,\"value\":\"%s\",\"type\":\"%s\"}}",
-                metafieldId, value, type
-        );
-
-        // Construct the URL with the provided shop name and product ID
-        String shopifyApiUrl = String.format(
-                "https://%s.myshopify.com/admin/api/2024-04/products/%s/metafields/%s.json",
-                shop, productId, metafieldId
-        );
-        logger.error("Metafields: "+jsonPayload+shopifyApiUrl);
-
-        // Set up the connection
-        URL url = new URL(shopifyApiUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestMethod("PUT");
-        conn.setRequestProperty("X-Shopify-Access-Token", accessToken);
-        conn.setRequestProperty("Content-Type", "application/json");
-
-        // Send the request
-        try (OutputStream os = conn.getOutputStream()) {
-            os.write(jsonPayload.getBytes());
-            os.flush();
-        }
-
-        // Get the response
-        int responseCode = conn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new RuntimeException("Failed : HTTP error code : " + responseCode);
-        }
-
-        System.out.println("Metafield updated successfully.");
-        conn.disconnect();
-    }
-
-    @Override
-    public void createMetafield(String shopName, String productId, String namespace, String key, String value, String type) throws Exception {
-        String accessToken = getValue(shopName);
-
-        // Create JSON payload
-        String jsonPayload = String.format(
-                "{\"metafield\":{\"namespace\":\"%s\",\"key\":\"%s\",\"value\":\"%s\",\"type\":\"%s\"}}",
-                namespace, key, value, type
-        );
-
-        // Construct the URL with the provided shop name and product ID
-        String shopifyApiUrl = String.format(
-                "https://%s.myshopify.com/admin/api/2024-01/products/%s/metafields.json",
-                shopName, productId
-        );
-
-        // Set up the connection
-        URL url = new URL(shopifyApiUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("X-Shopify-Access-Token", accessToken);
-        conn.setRequestProperty("Content-Type", "application/json");
-
-        // Send the request
-        try (OutputStream os = conn.getOutputStream()) {
-            os.write(jsonPayload.getBytes());
-            os.flush();
-        }
-
-        // Get the response
-        int responseCode = conn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_CREATED) {
-            throw new RuntimeException("Failed : HTTP error code : " + responseCode);
-        }
-
-        System.out.println("Metafield created successfully.");
-        conn.disconnect();
-    }
 
     private String sendRequest(String shop, String urlStr, String method, String payload) throws IOException {
         logger.info("Sending {} request to URL: {} - payload {}", method, urlStr, payload);

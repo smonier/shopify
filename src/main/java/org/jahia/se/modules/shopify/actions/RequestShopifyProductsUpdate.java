@@ -14,11 +14,11 @@ import javax.jcr.RepositoryException;
 import javax.jcr.ValueFormatException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
-import org.jahia.se.modules.shopify.model.IdSkuPair;
-import org.jahia.se.modules.shopify.model.Product;
-import org.jahia.se.modules.shopify.model.ProductDeserializer;
+import org.jahia.se.modules.shopify.model.*;
 import org.jahia.se.modules.shopify.services.impl.ShopifyService;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
@@ -38,6 +38,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 @Component(service = Action.class, immediate = true)
 public class RequestShopifyProductsUpdate extends Action {
@@ -92,107 +97,41 @@ public class RequestShopifyProductsUpdate extends Action {
             JCRNodeWrapper fileNode = getNodeByUUID(shop, session);
             shopNameList.add(fileNode.getDisplayableName());
         }
-        for (String shop : shopNameList) {
-            LOGGER.info("ACCESSING SHOP: " + shop);
-            String jsonUrl = shopifyService.getProducts(shop); // Method to get the JSON URL for the shop
-            List<Product> products = ProductDeserializer.fetchProductsFromJson(jsonUrl);
-            if (products != null) {
-                productList.addAll(products);
-            }
-        }
-        if (productList != null) {
-            for (Product product : productList) {
-                LOGGER.info(String.format("PRODUCT ID: %d, Title: %s",
-                        product.getId(), product.getTitle()));
-                for (Product.Variant variant : product.getVariants()) {
-                    LOGGER.info(String.format("Variant ID: %d, Title: %s, Product ID: %d, SKU: %s",
-                            variant.getId(), variant.getTitle(), variant.getProductId(), variant.getSku()));
 
-                }
-            }
-        }
         File csvFile = JCRContentUtils.downloadFileContent((JCRFileNode) node.getProperty("csvFile").getNode());
 
-        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
-                .withSkipLines(1) // Skip header row
-                .withCSVParser(new com.opencsv.CSVParserBuilder().withSeparator(';').build()) // Specify semicolon
-                .build()) {
-            String[] values;
-            while ((values = csvReader.readNext()) != null) {
-                LOGGER.info("values.length: " + values.length);
+        try {
+            JsonNode rootNode = convertCsvToJson(csvFile);
+            ObjectMapper objectMapper = new ObjectMapper();
+            // Print the JSON output to console
+            List<ProductFromCsv> productsFromCsv = ProductFromCsvDeserializer.fetchProductsFromJson(rootNode.toString());
+            LOGGER.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode));
 
-                if (values.length >= 8) {
-                    String id = values[0];
-                    String title = values[1];
-                    String body_html = values[2];
-                    String vendor = values[3];
-                    String product_type = values[4];
-                    String price = values[5];
-                    String inventory_quantity = values[6];
-                    String action = values[7];
-                    String amazingId = values[8];
-
-                    // Create product data map
-                    Map<String, Object> productData = new HashMap<>();
-                    Map<String, Object> productDetails = new HashMap<>();
-                    productDetails.put("id", id);
-                    productDetails.put("title", title);
-                    productDetails.put("body_html", body_html);
-                    productDetails.put("vendor", vendor);
-                    productDetails.put("product_type", product_type);
-                    productDetails.put("variants", new Object[] { new HashMap<String, Object>() {
-                        {
-                            put("price", price);
-                            put("inventory_quantity", inventory_quantity);
-                            put("sku", amazingId);
-                        }
-                    } });
-                    productData.put("product", productDetails);
-
-                    // Serialize productData to JSON
-                    String productDataJson = objectMapper.writeValueAsString(productData);
-
-                    // Update the product on Shopify
+            if (productsFromCsv != null) {
+                for (ProductFromCsv product : productsFromCsv) {
+                    LOGGER.info(String.format("CSV Handle: %s, CSV Title: %s",
+                            product.getHandle(), product.getTitle()));
                     for (String shop : shopNameList) {
-                        List<IdSkuPair> idSkuList = extractIdSkuPairs(shopifyService.getProducts(shop));
-                        Long shopifyId = getIdBySku(idSkuList, amazingId);
-
-                        if (shopifyId != null) {
-                            LOGGER.info("Shop Update: " + shop);
-                            switch (action.toLowerCase()) {
-                                case "create":
-                                    shopifyService.createProduct(shop, productDataJson);
-                                    break;
-                                case "read":
-                                    shopifyService.getProducts(shop);
-                                    break;
-                                case "update":
-                                    shopifyService.updateProduct(shop, shopifyId, productDataJson);
-                                    break;
-                                case "delete":
-                                    shopifyService.deleteProduct(shop, shopifyId);
-                                    break;
-                                default:
-                                    throw new IllegalArgumentException("Invalid action: " + action);
-                            }
+                        String shopifyObject = shopifyService.getProductsFromHandle(shop, product.getHandle());
+                        if (isProductsArrayEmpty(shopifyObject)) {
+                            String productDataJson = generateNewProductDataJson(product);
+                            shopifyService.createProduct(shop, productDataJson);
                             resultCode = HttpServletResponse.SC_OK;
                         } else {
-                            LOGGER.error("SKU " + amazingId + " not found in shop " + shop);
+                            List<Product> shopyfyProducts = ProductDeserializer.fetchProductsFromJson(shopifyObject);
+                            for (Product shopifyProduct : shopyfyProducts) {
+                                String productDataJson = generateProductDataJson(product, shopifyProduct);
+                                shopifyService.updateProduct(shop, shopifyProduct.getId(), productDataJson);
+                                resultCode = HttpServletResponse.SC_OK;
+                            }
                         }
                     }
-                } else {
-                    LOGGER.error("Invalid row: " + String.join(",", values));
                 }
             }
-            return resultCode;
-        } catch (IOException | CsvValidationException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            return resultCode;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return resultCode;
         }
+        return resultCode;
     }
 
     public static String getBaseUrl(HttpServletRequest req) {
@@ -221,36 +160,108 @@ public class RequestShopifyProductsUpdate extends Action {
         return new ArrayList<>(Arrays.asList(elements));
     }
 
-    public static List<IdSkuPair> extractIdSkuPairs(String response) {
-        List<IdSkuPair> idSkuList = new ArrayList<>();
-        try {
-            // Parse JSON content
-            JSONObject jsonObject = new JSONObject(response);
-            JSONArray products = jsonObject.getJSONArray("products");
 
-            // Extract id and sku pairs
-            for (int i = 0; i < products.length(); i++) {
-                JSONObject product = products.getJSONObject(i);
-                long productId = product.getLong("id");
-                JSONArray variants = product.getJSONArray("variants");
-                for (int j = 0; j < variants.length(); j++) {
-                    JSONObject variant = variants.getJSONObject(j);
-                    String sku = variant.getString("sku");
-                    idSkuList.add(new IdSkuPair(productId, sku));
+
+    public static JsonNode convertCsvToJson(File csvFile) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode jsonArray = objectMapper.createArrayNode();
+        ObjectNode rootNode = objectMapper.createObjectNode();
+
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withDelimiter(';');
+
+        try (FileReader reader = new FileReader(csvFile);
+             CSVParser csvParser = new CSVParser(reader, csvFormat)) {
+
+            for (CSVRecord csvRecord : csvParser) {
+                ObjectNode jsonObject = objectMapper.createObjectNode();
+                for (String header : csvParser.getHeaderMap().keySet()) {
+                    jsonObject.put(header, csvRecord.get(header));
                 }
+                jsonArray.add(jsonObject);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return idSkuList;
+
+        rootNode.set("products", jsonArray);
+        return rootNode;
     }
 
-    public static Long getIdBySku(List<IdSkuPair> idSkuList, String sku) {
-        for (IdSkuPair pair : idSkuList) {
-            if (pair.getSku().equals(sku)) {
-                return pair.getId();
+    public static String generateProductDataJson(ProductFromCsv productFromCsv, Product product) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Create product data map
+        Map<String, Object> productData = new HashMap<>();
+        Map<String, Object> productDetails = new HashMap<>();
+        productDetails.put("id", product.getId());
+        productDetails.put("title", productFromCsv.getTitle());
+        productDetails.put("body_html", productFromCsv.getBodyHtml());
+        productDetails.put("vendor", productFromCsv.getVendor());
+        productDetails.put("product_type", productFromCsv.getType());
+
+        Map<String, Object> variantDetails = new HashMap<>();
+        for (Product.Variant variant : product.getVariants()) {
+            if (variant.getTitle() != "DefaultTitle") {
+                variantDetails.put("id", variant.getId());
+                variantDetails.put("product_id", variant.getProductId());
+                variantDetails.put("option1", productFromCsv.getOption1Value());
+                variantDetails.put("option2", productFromCsv.getOption2Value());
+                variantDetails.put("option2", productFromCsv.getOption3Value());
+                variantDetails.put("price", productFromCsv.getVariantPrice());
+                variantDetails.put("inventory_quantity", productFromCsv.getVariantInventoryQty());
+                variantDetails.put("sku", productFromCsv.getVariantSku());
+
+            } else {
+                variantDetails.put("price", productFromCsv.getVariantPrice());
+                variantDetails.put("inventory_quantity", productFromCsv.getVariantInventoryQty());
+                variantDetails.put("sku", productFromCsv.getVariantSku());
             }
         }
-        return null; // Return null if SKU not found
+
+
+        productDetails.put("variants", new Object[]{variantDetails});
+        productData.put("product", productDetails);
+
+        // Serialize productData to JSON
+        return objectMapper.writeValueAsString(productData);
+    }
+
+    public static String generateNewProductDataJson(ProductFromCsv productFromCsv) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Create product data map
+        Map<String, Object> productData = new HashMap<>();
+        Map<String, Object> productDetails = new HashMap<>();
+        productDetails.put("handle", productFromCsv.getHandle());
+        productDetails.put("title", productFromCsv.getTitle());
+        productDetails.put("body_html", productFromCsv.getBodyHtml());
+        productDetails.put("vendor", productFromCsv.getVendor());
+        productDetails.put("product_type", productFromCsv.getType());
+
+        Map<String, Object> variantDetails = new HashMap<>();
+
+        variantDetails.put("option1", productFromCsv.getOption1Value());
+        variantDetails.put("option2", productFromCsv.getOption2Value());
+        variantDetails.put("option2", productFromCsv.getOption3Value());
+        variantDetails.put("price", productFromCsv.getVariantPrice());
+        variantDetails.put("inventory_quantity", productFromCsv.getVariantInventoryQty());
+        variantDetails.put("sku", productFromCsv.getVariantSku());
+
+        Map<String, Object> imageDetails = new HashMap<>();
+        imageDetails.put("src", productFromCsv.getImageSrc());
+
+        productDetails.put("variants", new Object[]{variantDetails});
+        productDetails.put("images", new Object[]{imageDetails});
+
+        productData.put("product", productDetails);
+
+        // Serialize productData to JSON
+        return objectMapper.writeValueAsString(productData);
+    }
+
+    public static boolean isProductsArrayEmpty(String jsonResponse) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+        JsonNode productsNode = rootNode.path("products");
+        return productsNode.isArray() && productsNode.size() == 0;
     }
 }

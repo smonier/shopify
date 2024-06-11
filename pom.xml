@@ -94,7 +94,11 @@
         <artifactId>guice</artifactId>
         <version>4.2.3</version>
       </dependency>
-  
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
+        </dependency>
       <!-- JarArchiver Dependency (Example Version) -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
