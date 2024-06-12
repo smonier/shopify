@@ -1,12 +1,12 @@
-package org.jahia.se.modules.shopify.model;
+package org.jahia.se.modules.shopify.models;
 
 import java.util.List;
 
-public class UpdateResult {
+public class ActionResult {
     private int resultCode;
     private List<Shop> shop;
 
-    public UpdateResult(int resultCode, List<Shop> shop) {
+    public ActionResult(int resultCode, List<Shop> shop) {
         this.resultCode = resultCode;
         this.shop = shop;
     }

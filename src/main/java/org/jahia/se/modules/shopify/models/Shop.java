@@ -1,4 +1,4 @@
-package org.jahia.se.modules.shopify.model;
+package org.jahia.se.modules.shopify.models;
 
 public class Shop {
     private String name;

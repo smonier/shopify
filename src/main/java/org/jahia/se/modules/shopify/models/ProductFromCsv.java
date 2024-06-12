@@ -1,8 +1,6 @@
-package org.jahia.se.modules.shopify.model;
+package org.jahia.se.modules.shopify.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.List;
 
 public class ProductFromCsv {
     @JsonProperty("Handle")

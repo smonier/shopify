@@ -1,4 +1,4 @@
-package org.jahia.se.modules.shopify.model;
+package org.jahia.se.modules.shopify.models;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;

@@ -13,8 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jahia.bin.Action;
-import org.jahia.bin.ActionResult;
-import org.jahia.se.modules.shopify.model.*;
+import org.jahia.se.modules.shopify.models.*;
 import org.jahia.se.modules.shopify.services.impl.ShopifyService;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
@@ -64,19 +63,19 @@ public class RequestShopifyProductsUpdate extends Action {
     }
 
     @Override
-    public ActionResult doExecute(final HttpServletRequest request, final RenderContext renderContext,
-                                  final Resource resource, final JCRSessionWrapper session, Map<String, List<String>> parameters,
-                                  final URLResolver urlResolver) throws Exception {
+    public org.jahia.bin.ActionResult doExecute(final HttpServletRequest request, final RenderContext renderContext,
+                                                final Resource resource, final JCRSessionWrapper session, Map<String, List<String>> parameters,
+                                                final URLResolver urlResolver) throws Exception {
         final JSONObject resp = new JSONObject();
 
-        UpdateResult result = updateProductsFromCSV(resource.getNode(), session, request);
+        ActionResult result = updateProductsFromCSV(resource.getNode(), session, request);
         resp.put("resultCode", result.getResultCode());
         resp.put("shop", result.getShop());
         LOGGER.info(resp.toString());
-        return new ActionResult(result.getResultCode(), null, resp);
+        return new org.jahia.bin.ActionResult(result.getResultCode(), null, resp);
     }
 
-    private UpdateResult updateProductsFromCSV(JCRNodeWrapper node, JCRSessionWrapper session, HttpServletRequest request)
+    private ActionResult updateProductsFromCSV(JCRNodeWrapper node, JCRSessionWrapper session, HttpServletRequest request)
             throws IOException, ItemNotFoundException, ValueFormatException, PathNotFoundException,
             RepositoryException {
         int resultCode = HttpServletResponse.SC_BAD_REQUEST;
@@ -135,7 +134,7 @@ public class RequestShopifyProductsUpdate extends Action {
         for (Map.Entry<String, Integer> entry : shopProductCounts.entrySet()) {
             shopListWithCounts.add(new Shop(entry.getKey(), entry.getValue()));
         }
-        UpdateResult updateResult = new UpdateResult(resultCode, shopListWithCounts);
+        ActionResult updateResult = new ActionResult(resultCode, shopListWithCounts);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(Collections.singletonMap("updateResult", Collections.singletonList(updateResult)));
