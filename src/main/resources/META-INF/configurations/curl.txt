@@ -21,8 +21,8 @@ curl -X GET "https://marketplace-jahia02.myshopify.com/admin/api/2024-04/product
 
 8539968471262
 
-curl -X GET "https://marketplace-jahia02.myshopify.com/admin/api/2024-01/products/8539968471262.json" \
--H "X-Shopify-Access-Token: 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"
+curl -X GET "https://marketplace-jahia01.myshopify.com/admin/api/2024-01/products/7170036662370.json" \
+-H "X-Shopify-Access-Token: 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"
 
 
 curl -X GET "https://marketplace-jahia01.myshopify.com/admin/api/2023-01/products.json" \
@@ -50,7 +50,8 @@ curl -X POST \
 		}
 	}
 	'
-	
+	curl -X DELETE "https://marketplace-jahia01.myshopify.com/admin/api/unstable/products/7170504032354.json" \
+    -H "X-Shopify-Access-Token: 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"
 	
 	
 	curl -X POST \
@@ -88,3 +89,14 @@ curl -X GET "https://marketplace-jahia02.myshopify.com/admin/api/2024-01/variant
 
 curl -X GET "https://marketplace-jahia02.myshopify.com/admin/products/search.json?query=sku:AMZ100021" \
 -H "X-Shopify-Access-Token: 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"
+
+
+curl -X GET "https://63b99c-79.myshopify.com/admin/api/unstable/products/9225042493777/variants/count.json" \
+-H "X-Shopify-Access-Token: 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"
+
+curl -X GET "https://63b99c-79.myshopify.com/admin/api/unstable/products/9225043509585/variants/count.json" \
+-H "X-Shopify-Access-Token: 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"
+
+
+
+63b99c-79=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

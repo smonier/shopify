@@ -3,11 +3,7 @@ package org.jahia.se.modules.shopify.actions;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -27,7 +23,6 @@ import org.jahia.services.content.decorator.JCRFileNode;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -35,9 +30,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.csv.CSVFormat;
@@ -49,6 +41,7 @@ public class RequestShopifyProductsUpdate extends Action {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestShopifyProductsUpdate.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static int productCount = 0;
 
     @Activate
     public void activate() {
@@ -75,27 +68,29 @@ public class RequestShopifyProductsUpdate extends Action {
                                   final Resource resource, final JCRSessionWrapper session, Map<String, List<String>> parameters,
                                   final URLResolver urlResolver) throws Exception {
         final JSONObject resp = new JSONObject();
-        int resultCode = HttpServletResponse.SC_BAD_REQUEST;
 
-        resultCode = updateProductsFromCSV(resource.getNode(), session, request);
-
-        return new ActionResult(resultCode, null, resp);
+        UpdateResult result = updateProductsFromCSV(resource.getNode(), session, request);
+        resp.put("resultCode", result.getResultCode());
+        resp.put("shop", result.getShop());
+        LOGGER.info(resp.toString());
+        return new ActionResult(result.getResultCode(), null, resp);
     }
 
-    private int updateProductsFromCSV(JCRNodeWrapper node, JCRSessionWrapper session, HttpServletRequest request)
+    private UpdateResult updateProductsFromCSV(JCRNodeWrapper node, JCRSessionWrapper session, HttpServletRequest request)
             throws IOException, ItemNotFoundException, ValueFormatException, PathNotFoundException,
             RepositoryException {
         int resultCode = HttpServletResponse.SC_BAD_REQUEST;
         final String shopName = node.getPropertyAsString("shopName");
         List<String> shopNameList = new ArrayList<>();
+        Map<String, Integer> shopProductCounts = new HashMap<>();
 
         List<String> shopList = convertStringToList(shopName);
-        List<Product> productList = new ArrayList<>();
         LOGGER.info("shopList: " + shopList);
 
         for (String shop : shopList) {
             JCRNodeWrapper fileNode = getNodeByUUID(shop, session);
             shopNameList.add(fileNode.getDisplayableName());
+            shopProductCounts.put(fileNode.getDisplayableName(), 0);
         }
 
         File csvFile = JCRContentUtils.downloadFileContent((JCRFileNode) node.getProperty("csvFile").getNode());
@@ -103,26 +98,29 @@ public class RequestShopifyProductsUpdate extends Action {
         try {
             JsonNode rootNode = convertCsvToJson(csvFile);
             ObjectMapper objectMapper = new ObjectMapper();
-            // Print the JSON output to console
             List<ProductFromCsv> productsFromCsv = ProductFromCsvDeserializer.fetchProductsFromJson(rootNode.toString());
             LOGGER.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode));
 
             if (productsFromCsv != null) {
                 for (ProductFromCsv product : productsFromCsv) {
-                    LOGGER.info(String.format("CSV Handle: %s, CSV Title: %s",
-                            product.getHandle(), product.getTitle()));
-                    for (String shop : shopNameList) {
-                        String shopifyObject = shopifyService.getProductsFromHandle(shop, product.getHandle());
-                        if (isProductsArrayEmpty(shopifyObject)) {
-                            String productDataJson = generateNewProductDataJson(product);
-                            shopifyService.createProduct(shop, productDataJson);
-                            resultCode = HttpServletResponse.SC_OK;
-                        } else {
-                            List<Product> shopyfyProducts = ProductDeserializer.fetchProductsFromJson(shopifyObject);
-                            for (Product shopifyProduct : shopyfyProducts) {
-                                String productDataJson = generateProductDataJson(product, shopifyProduct);
-                                shopifyService.updateProduct(shop, shopifyProduct.getId(), productDataJson);
+                    if (product.getTitle() != null && !product.getTitle().isEmpty()) {
+                        for (String shop : shopNameList) {
+                            LOGGER.info(String.format("************* CSV Handle: %s, CSV Title: %s ****************",
+                                    product.getHandle(), product.getTitle()));
+                            String shopifyObject = shopifyService.getProductsFromHandle(shop, product.getHandle());
+                            if (isProductsArrayEmpty(shopifyObject)) {
+                                String productDataJson = generateNewProductDataJson(product);
+                                shopifyService.createProduct(shop, productDataJson);
                                 resultCode = HttpServletResponse.SC_OK;
+                                shopProductCounts.put(shop, shopProductCounts.get(shop) + 1);
+                            } else {
+                                List<Product> shopifyProducts = ProductDeserializer.fetchProductsFromJson(shopifyObject);
+                                for (Product shopifyProduct : shopifyProducts) {
+                                    String productDataJson = generateProductDataJson(product, shopifyProduct);
+                                    shopifyService.updateProduct(shop, shopifyProduct.getId(), productDataJson);
+                                    resultCode = HttpServletResponse.SC_OK;
+                                    shopProductCounts.put(shop, shopProductCounts.get(shop) + 1);
+                                }
                             }
                         }
                     }
@@ -131,9 +129,20 @@ public class RequestShopifyProductsUpdate extends Action {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return resultCode;
-    }
 
+        // Create JSON result structure
+        List<Shop> shopListWithCounts = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : shopProductCounts.entrySet()) {
+            shopListWithCounts.add(new Shop(entry.getKey(), entry.getValue()));
+        }
+        UpdateResult updateResult = new UpdateResult(resultCode, shopListWithCounts);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(Collections.singletonMap("updateResult", Collections.singletonList(updateResult)));
+        LOGGER.info("UpdateResult JSON: " + jsonString);
+
+        return updateResult;
+    }
     public static String getBaseUrl(HttpServletRequest req) {
         String baseUrl = null;
         if (req != null) {
@@ -159,8 +168,6 @@ public class RequestShopifyProductsUpdate extends Action {
         // Convert the array to a list and wrap in an ArrayList
         return new ArrayList<>(Arrays.asList(elements));
     }
-
-
 
     public static JsonNode convertCsvToJson(File csvFile) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -196,6 +203,7 @@ public class RequestShopifyProductsUpdate extends Action {
         productDetails.put("body_html", productFromCsv.getBodyHtml());
         productDetails.put("vendor", productFromCsv.getVendor());
         productDetails.put("product_type", productFromCsv.getType());
+        productDetails.put("tags", productFromCsv.getTags());
 
         Map<String, Object> variantDetails = new HashMap<>();
         for (Product.Variant variant : product.getVariants()) {
@@ -215,13 +223,35 @@ public class RequestShopifyProductsUpdate extends Action {
                 variantDetails.put("sku", productFromCsv.getVariantSku());
             }
         }
-
+        Map<String, Object> imageDetails = new HashMap<>();
+        imageDetails.put("src", productFromCsv.getImageSrc());
 
         productDetails.put("variants", new Object[]{variantDetails});
+        productDetails.put("images", new Object[]{imageDetails});
         productData.put("product", productDetails);
 
         // Serialize productData to JSON
         return objectMapper.writeValueAsString(productData);
+    }
+
+    public static String generateVariantDataJson(ProductFromCsv productFromCsv) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Create product data map
+        Map<String, Object> variantData = new HashMap<>();
+        Map<String, Object> variantDetails = new HashMap<>();
+
+        variantDetails.put("option1", productFromCsv.getOption1Value());
+        variantDetails.put("option2", productFromCsv.getOption2Value());
+        variantDetails.put("option2", productFromCsv.getOption3Value());
+        variantDetails.put("price", productFromCsv.getVariantPrice());
+        variantDetails.put("inventory_quantity", productFromCsv.getVariantInventoryQty());
+        variantDetails.put("sku", productFromCsv.getVariantSku());
+
+        variantData.put("variant", variantDetails);
+
+        // Serialize productData to JSON
+        return objectMapper.writeValueAsString(variantData);
     }
 
     public static String generateNewProductDataJson(ProductFromCsv productFromCsv) throws IOException {
@@ -235,6 +265,7 @@ public class RequestShopifyProductsUpdate extends Action {
         productDetails.put("body_html", productFromCsv.getBodyHtml());
         productDetails.put("vendor", productFromCsv.getVendor());
         productDetails.put("product_type", productFromCsv.getType());
+        productDetails.put("tags", productFromCsv.getTags());
 
         Map<String, Object> variantDetails = new HashMap<>();
 

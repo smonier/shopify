@@ -1,40 +1,75 @@
 package org.jahia.se.modules.shopify.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class ProductFromCsv {
+    @JsonProperty("Handle")
     private String handle;
+    @JsonProperty("Title")
     private String title;
+    @JsonProperty("Body (HTML)")
     private String bodyHtml;
+    @JsonProperty("Vendor")
     private String vendor;
+    @JsonProperty("Type")
     private String type;
+    @JsonProperty("Tags")
     private String tags;
+    @JsonProperty("Published")
     private boolean published;
+    @JsonProperty("Option1 Name")
     private String option1Name;
+    @JsonProperty("Option1 Value")
     private String option1Value;
+    @JsonProperty("Option2 Name")
     private String option2Name;
+    @JsonProperty("Option2 Value")
     private String option2Value;
+    @JsonProperty("Option3 Name")
     private String option3Name;
+    @JsonProperty("Option3 Value")
     private String option3Value;
+    @JsonProperty("Variant SKU")
     private String variantSku;
-    private int variantGrams;
+    @JsonProperty("Variant Grams")
+    private double variantGrams;
+    @JsonProperty("Variant Inventory Tracker")
     private String variantInventoryTracker;
+    @JsonProperty("Variant Inventory Qty")
     private int variantInventoryQty;
+    @JsonProperty("Variant Inventory Policy")
     private String variantInventoryPolicy;
+    @JsonProperty("Variant Fulfillment Service")
     private String variantFulfillmentService;
+    @JsonProperty("Variant Price")
     private double variantPrice;
+    @JsonProperty("Variant Compare At Price")
     private double variantCompareAtPrice;
+    @JsonProperty("Variant Requires Shipping")
     private boolean variantRequiresShipping;
+    @JsonProperty("Variant Taxable")
     private boolean variantTaxable;
+    @JsonProperty("Variant Barcode")
     private String variantBarcode;
+    @JsonProperty("Image Src")
     private String imageSrc;
+    @JsonProperty("Image Position")
     private int imagePosition;
+    @JsonProperty("Image Alt Text")
     private String imageAltText;
+    @JsonProperty("Gift Card")
     private boolean giftCard;
+    @JsonProperty("SEO Title")
     private String seoTitle;
+    @JsonProperty("SEO Description")
     private String seoDescription;
+    @JsonProperty("Variant Image")
     private String variantImage;
+    @JsonProperty("Variant Weight Unit")
     private String variantWeightUnit;
+    @JsonProperty("Variant Tax Code")
     private String variantTaxCode;
 
     // Getters and Setters
@@ -150,11 +185,11 @@ public class ProductFromCsv {
         this.variantSku = variantSku;
     }
 
-    public int getVariantGrams() {
+    public double getVariantGrams() {
         return variantGrams;
     }
 
-    public void setVariantGrams(int variantGrams) {
+    public void setVariantGrams(double variantGrams) {
         this.variantGrams = variantGrams;
     }
 

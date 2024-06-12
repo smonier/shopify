@@ -1,5 +1,7 @@
 package org.jahia.se.modules.shopify.services.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jahia.se.modules.shopify.services.IShopifyService;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -44,13 +46,33 @@ public class ShopifyService implements IShopifyService, ManagedService {
         String urlStr = "https://" + shop + ".myshopify.com/admin/products/" + productId + ".json";
         return sendRequest(shop, urlStr, "PUT", productJson);
     }
-
+    @Override
+    public String createVariant(String shop, long productId, String productJson) throws IOException {
+        String urlStr = "https://" + shop + ".myshopify.com/admin/products/" + productId + ".json";
+        return sendRequest(shop, urlStr, "PUT", productJson);
+    }
     @Override
     public String deleteProduct(String shop, long productId) throws IOException {
         String urlStr = "https://" + shop + ".myshopify.com/admin/products/" + productId + ".json";
         return sendRequest(shop, urlStr, "DELETE", null);
     }
 
+    @Override
+    public int getVariantsCount(String shop, long productId) throws IOException {
+
+        String urlStr = "https://" + shop + ".myshopify.com/admin/products/" + productId + "/variants/count.json";
+        String jsonResponse = sendRequest(shop, urlStr, "GET", null);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            return rootNode.path("count").asInt();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     private String sendRequest(String shop, String urlStr, String method, String payload) throws IOException {
         logger.info("Sending {} request to URL: {} - payload {}", method, urlStr, payload);
