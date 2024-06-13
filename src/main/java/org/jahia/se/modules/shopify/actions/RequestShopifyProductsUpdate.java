@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jahia.bin.Action;
+import org.jahia.bin.ActionResult;
 import org.jahia.se.modules.shopify.models.*;
 import org.jahia.se.modules.shopify.services.impl.ShopifyService;
 import org.jahia.services.content.JCRContentUtils;
@@ -63,19 +64,19 @@ public class RequestShopifyProductsUpdate extends Action {
     }
 
     @Override
-    public org.jahia.bin.ActionResult doExecute(final HttpServletRequest request, final RenderContext renderContext,
-                                                final Resource resource, final JCRSessionWrapper session, Map<String, List<String>> parameters,
-                                                final URLResolver urlResolver) throws Exception {
+    public ActionResult doExecute(final HttpServletRequest request, final RenderContext renderContext,
+                                  final Resource resource, final JCRSessionWrapper session, Map<String, List<String>> parameters,
+                                  final URLResolver urlResolver) throws Exception {
         final JSONObject resp = new JSONObject();
 
-        ActionResult result = updateProductsFromCSV(resource.getNode(), session, request);
+        ActionResponse result = updateProductsFromCSV(resource.getNode(), session, request);
         resp.put("resultCode", result.getResultCode());
         resp.put("shop", result.getShop());
         LOGGER.info(resp.toString());
-        return new org.jahia.bin.ActionResult(result.getResultCode(), null, resp);
+        return new ActionResult(result.getResultCode(), null, resp);
     }
 
-    private ActionResult updateProductsFromCSV(JCRNodeWrapper node, JCRSessionWrapper session, HttpServletRequest request)
+    private ActionResponse updateProductsFromCSV(JCRNodeWrapper node, JCRSessionWrapper session, HttpServletRequest request)
             throws IOException, ItemNotFoundException, ValueFormatException, PathNotFoundException,
             RepositoryException {
         int resultCode = HttpServletResponse.SC_BAD_REQUEST;
@@ -134,7 +135,7 @@ public class RequestShopifyProductsUpdate extends Action {
         for (Map.Entry<String, Integer> entry : shopProductCounts.entrySet()) {
             shopListWithCounts.add(new Shop(entry.getKey(), entry.getValue()));
         }
-        ActionResult updateResult = new ActionResult(resultCode, shopListWithCounts);
+        ActionResponse updateResult = new ActionResponse(resultCode, shopListWithCounts);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(Collections.singletonMap("updateResult", Collections.singletonList(updateResult)));

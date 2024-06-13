@@ -2,11 +2,11 @@ package org.jahia.se.modules.shopify.models;
 
 import java.util.List;
 
-public class ActionResult {
+public class ActionResponse {
     private int resultCode;
     private List<Shop> shop;
 
-    public ActionResult(int resultCode, List<Shop> shop) {
+    public ActionResponse(int resultCode, List<Shop> shop) {
         this.resultCode = resultCode;
         this.shop = shop;
     }
