@@ -3,9 +3,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:50fc62e7-4028-455c-842f-28dd2b702a74",
+  "serialNumber": "urn:uuid:b0f51b37-c717-4ec6-b3e6-5342ff070d57",
   "metadata": {
-    "timestamp": "2024-06-13T14:23:11.848Z",
+    "timestamp": "2024-06-17T14:52:44.720Z",
     "tools": [
       {
         "vendor": "@cyclonedx",
@@ -87,10 +87,272 @@
       ]
     }
   },
-  "components": [],
+  "components": [
+    {
+      "type": "library",
+      "name": "moonstone",
+      "group": "@jahia",
+      "version": "2.4.16",
+      "bom-ref": "pkg:npm/%40jahia/moonstone@2.4.16?vcs_url=git%2Bhttps%3A//github.com/Jahia/moonstone.git",
+      "purl": "pkg:npm/%40jahia/moonstone@2.4.16?vcs_url=git%2Bhttps%3A//github.com/Jahia/moonstone.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/Jahia/moonstone.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/Jahia/moonstone#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/Jahia/moonstone/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "clsx",
+      "version": "1.2.1",
+      "bom-ref": "pkg:npm/clsx@1.2.1?vcs_url=git%2Bhttps%3A//github.com/lukeed/clsx.git",
+      "author": "Luke Edwards",
+      "description": "A tiny (228B) utility for constructing className strings conditionally.",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/clsx@1.2.1?vcs_url=git%2Bhttps%3A//github.com/lukeed/clsx.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/lukeed/clsx.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/lukeed/clsx#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/lukeed/clsx/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "style-loader",
+      "version": "1.3.0",
+      "bom-ref": "pkg:npm/style-loader@1.3.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/style-loader.git",
+      "author": "Tobias Koppers @sokra",
+      "description": "style loader module for webpack",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/style-loader@1.3.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/style-loader.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/webpack-contrib/style-loader.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/webpack-contrib/style-loader",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/webpack-contrib/style-loader/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "css-loader",
+      "version": "3.6.0",
+      "bom-ref": "pkg:npm/css-loader@3.6.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/css-loader.git",
+      "author": "Tobias Koppers @sokra",
+      "description": "css loader module for webpack",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/css-loader@3.6.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/css-loader.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/webpack-contrib/css-loader.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/webpack-contrib/css-loader",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/webpack-contrib/css-loader/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "re-resizable",
+      "version": "6.9.17",
+      "bom-ref": "pkg:npm/re-resizable@6.9.17?vcs_url=git%2Bhttps%3A//github.com/bokuweb/react-resizable-box.git",
+      "author": "bokuweb",
+      "description": "Resizable component for React.",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/re-resizable@6.9.17?vcs_url=git%2Bhttps%3A//github.com/bokuweb/react-resizable-box.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/bokuweb/react-resizable-box.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/bokuweb/react-resizable-box",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/bokuweb/react-resizable-box/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "to-px",
+      "version": "1.1.0",
+      "bom-ref": "pkg:npm/to-px@1.1.0?vcs_url=git%2Bhttps%3A//github.com/mikolalysenko/to-px.git",
+      "author": "Mikola Lysenko",
+      "description": "Convert any CSS unit to logical pixels (\"px\")",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/to-px@1.1.0?vcs_url=git%2Bhttps%3A//github.com/mikolalysenko/to-px.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/mikolalysenko/to-px.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/mikolalysenko/to-px",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/mikolalysenko/to-px/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "parse-unit",
+      "version": "1.0.1",
+      "bom-ref": "pkg:npm/parse-unit@1.0.1?vcs_url=git%3A//github.com/mattdesl/parse-unit.git",
+      "author": "Matt DesLauriers",
+      "description": "parses number and unit, '20px' into [20, 'px']",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/parse-unit@1.0.1?vcs_url=git%3A//github.com/mattdesl/parse-unit.git",
+      "externalReferences": [
+        {
+          "url": "git://github.com/mattdesl/parse-unit.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/mattdesl/parse-unit",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/mattdesl/parse-unit/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ]
+    }
+  ],
   "dependencies": [
     {
-      "ref": "pkg:npm/%40jahia/shopify@1.0.0?vcs_url=git%2Bssh%3A//git%40github.com/smonier/shopify.git"
+      "ref": "pkg:npm/%40jahia/shopify@1.0.0?vcs_url=git%2Bssh%3A//git%40github.com/smonier/shopify.git",
+      "dependsOn": [
+        "pkg:npm/%40jahia/moonstone@2.4.16?vcs_url=git%2Bhttps%3A//github.com/Jahia/moonstone.git"
+      ]
+    },
+    {
+      "ref": "pkg:npm/%40jahia/moonstone@2.4.16?vcs_url=git%2Bhttps%3A//github.com/Jahia/moonstone.git",
+      "dependsOn": [
+        "pkg:npm/%40jahia/shopify@1.0.0?vcs_url=git%2Bssh%3A//git%40github.com/smonier/shopify.git",
+        "pkg:npm/clsx@1.2.1?vcs_url=git%2Bhttps%3A//github.com/lukeed/clsx.git",
+        "pkg:npm/re-resizable@6.9.17?vcs_url=git%2Bhttps%3A//github.com/bokuweb/react-resizable-box.git",
+        "pkg:npm/style-loader@1.3.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/style-loader.git",
+        "pkg:npm/css-loader@3.6.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/css-loader.git",
+        "pkg:npm/to-px@1.1.0?vcs_url=git%2Bhttps%3A//github.com/mikolalysenko/to-px.git"
+      ]
+    },
+    {
+      "ref": "pkg:npm/clsx@1.2.1?vcs_url=git%2Bhttps%3A//github.com/lukeed/clsx.git"
+    },
+    {
+      "ref": "pkg:npm/style-loader@1.3.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/style-loader.git"
+    },
+    {
+      "ref": "pkg:npm/css-loader@3.6.0?vcs_url=git%2Bhttps%3A//github.com/webpack-contrib/css-loader.git"
+    },
+    {
+      "ref": "pkg:npm/re-resizable@6.9.17?vcs_url=git%2Bhttps%3A//github.com/bokuweb/react-resizable-box.git",
+      "dependsOn": [
+        "pkg:npm/%40jahia/shopify@1.0.0?vcs_url=git%2Bssh%3A//git%40github.com/smonier/shopify.git"
+      ]
+    },
+    {
+      "ref": "pkg:npm/to-px@1.1.0?vcs_url=git%2Bhttps%3A//github.com/mikolalysenko/to-px.git",
+      "dependsOn": [
+        "pkg:npm/parse-unit@1.0.1?vcs_url=git%3A//github.com/mattdesl/parse-unit.git"
+      ]
+    },
+    {
+      "ref": "pkg:npm/parse-unit@1.0.1?vcs_url=git%3A//github.com/mattdesl/parse-unit.git"
     }
   ]
 }
