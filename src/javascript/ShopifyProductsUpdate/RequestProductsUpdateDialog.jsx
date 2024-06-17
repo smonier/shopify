@@ -3,10 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useSiteInfo, useNodeInfo } from '@jahia/data-helper';
 import { useSelector } from 'react-redux';
 import { LoaderOverlay } from '../DesignSystem/LoaderOverlay';
-import PropTypes from 'prop-types';
-import {RequestProductsUpdateDialog} from './CopyLanguageDialog';
-import {ComponentRendererContext} from '@jahia/ui-extender';
-import {useFormikContext} from 'formik';
 
 export const RequestProductsUpdate = ({ path, render: Render, ...otherProps }) => {
     const { t } = useTranslation('shopify');
