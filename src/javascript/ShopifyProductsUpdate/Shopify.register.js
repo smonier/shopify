@@ -20,10 +20,10 @@ export default function () {
         isMenuPreload: true
     });
 
-    registry.add('action', 'shopifyProductsUpdate', RequestProductsUpdate ,{
+    registry.add('action', 'shopifyProductsUpdate', {
         targets: ['shopifyMenu:1'],
-        buttonLabel: ('shopify:label.requestShopifyProductsUpdate', { displayName: node.displayName }),
-        showOnNodeTypes: ['shopifynt:productsList']
+        showOnNodeTypes: ['shopifynt:productsList'],
+        component: RequestProductsUpdate
     });
 }
 
