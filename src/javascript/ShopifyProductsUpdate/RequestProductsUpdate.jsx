@@ -2,24 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSiteInfo, useNodeInfo } from '@jahia/data-helper';
 import { useSelector } from 'react-redux';
-import { LoaderOverlay } from '../DesignSystem/LoaderOverlay';
-import PropTypes from 'prop-types';
-import {RequestProductsUpdateDialog} from './CopyLanguageDialog';
-import {ComponentRendererContext} from '@jahia/ui-extender';
-import {useFormikContext} from 'formik';
+import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
+
+
 
 export const RequestProductsUpdate = ({ path, render: Render, ...otherProps }) => {
     const { t } = useTranslation('shopify');
     const { language, site } = useSelector(state => ({ language: state.language, site: state.site }));
-    const { siteInfo, loading: siteLoading } = useSiteInfo({ siteKey: site, displayLanguage: language });
-    const { node, loading: nodeLoading } = useNodeInfo({ path: path, language: language }, { getDisplayName: true });
-    const [data, setData] = useState(null);
-    const [loadingQuery, setLoadingQuery] = useState(false);
-    const [error, setError] = useState(null);
+    const { siteInfo, loading } = useSiteInfo({ siteKey: site, displayLanguage: language });
+    const { node, nodeLoading } = useNodeInfo({ path: path, language: language }, { getDisplayName: true });
 
     const handleClick = async () => {
-        setLoadingQuery(true);
-        setError(null);
         try {
             const response = await fetch(`${contextJsParameters.contextPath}/cms/editframe/default/${language}${path}.requestShopifyProductsUpdate.do`, {
                 method: 'POST',
@@ -50,8 +43,10 @@ export const RequestProductsUpdate = ({ path, render: Render, ...otherProps }) =
                 });
 
                 alert(messageContent);
+
             } else {
                 alert(`Error: ${data.resultCode}`);
+
             }
         } catch (error) {
             console.error('Error updating Shopify products:', error);
@@ -61,33 +56,19 @@ export const RequestProductsUpdate = ({ path, render: Render, ...otherProps }) =
                 errorMessage = error.message;
             }
 
-            setError(errorMessage);
-        } finally {
-            setLoadingQuery(false);
+            alert(errorMessage);
         }
     };
 
-    useEffect(() => {
-        if (data) {
-            alert(data);
-        }
-        if (error) {
-            alert(error);
-        }
-    }, [data, error]);
-
-    if (loadingQuery || siteLoading || !siteInfo || nodeLoading || !node) {
-        return <LoaderOverlay status={true} />;
+    if (loading || !siteInfo || nodeLoading || !node) {
+        return <LoaderOverlay/>;
     }
 
     return (
-        <>
-            <Render
-                {...otherProps}
-                buttonLabel={t('label.requestShopifyProductsUpdate', { displayName: node.displayName })}
-                onClick={handleClick}
-            />
-            <LoaderOverlay status={loadingQuery} />
-        </>
-    );
+
+        <Render
+            {...otherProps}
+            buttonLabel={t('label.requestShopifyProductsUpdate', { displayName: node.displayName })}
+            onClick={handleClick}
+        />);
 };
