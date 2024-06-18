@@ -78,10 +78,35 @@ div.dialog_overflowYVisible {
   }
 
   .updateResultsTitle {
-      color: #3f51b5; /* Example color */
+      color: rgb(0, 160, 227); /* Example color */
       margin-bottom: 16px; /* Space below the title */
       margin-left: 10px; /* Adjust as needed for indentation */
       font-weight: bold; /* Bold text */
       font-size: 16px;
   }
+  .gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columns of equal width */
+    gap: 16px; /* Space between grid items */
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove default padding */
+    margin-left: 20px; /* Adjust as needed for indentation */
+  }
+  
+  .gridHeader {
+    font-weight: bold;
+    background-color: #e0e0e0; /* Optional: background color for header */
+    padding: 10px;
+    border: 1px solid #ccc; /* Optional: border around items */
+    border-radius: 4px; /* Optional: rounded corners */
+  }
+  
+  .gridItem {
+    padding: 10px;
+    border: 1px solid #ccc; /* Optional: border around items */
+    border-radius: 4px; /* Optional: rounded corners */
+    background-color: #f9f9f9; /* Optional: background color */
+  }
+  
 }
+

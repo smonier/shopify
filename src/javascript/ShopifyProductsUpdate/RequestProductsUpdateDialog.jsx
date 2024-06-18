@@ -7,8 +7,8 @@ import { useSiteInfo, useNodeInfo } from '@jahia/data-helper';
 import { useSelector } from 'react-redux';
 import { LoaderOverlay } from '../DesignSystem/LoaderOverlay';
 import styles from './RequestProductsUpdateDialog.scss';
-import {useQuery} from '@apollo/client';
-import {GetShops} from '../Utils/shops.gql-queries';
+import { useQuery } from '@apollo/client';
+import { GetShops } from '../Utils/shops.gql-queries';
 
 export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog }) => {
     const { t } = useTranslation('shopify');
@@ -20,7 +20,7 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog }) => 
     const [error, setError] = useState(null);
     const [results, setResults] = useState(null);
 
-    const {data, errors, loading} = useQuery(GetShops, {
+    const { data, errors, loading } = useQuery(GetShops, {
         variables: {
             path: path,
             language: language
@@ -111,18 +111,31 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog }) => 
                 <div className={styles.loaderOverlayWrapper}>
                     <LoaderOverlay status={loadingQuery} />
                 </div>
-                {shops.length > 0 && (
+
+                {results && shops.length > 0 && (
+                    <div className={styles.textResults}>
+                        <Typography variant="h4" className={styles.updateResultsTitle}>Products Update Results</Typography>
+                        <div className={styles.gridContainer}>
+                            <div className={styles.gridHeader}>Shop</div>
+                            <div className={styles.gridHeader}>Products Created</div>
+                            <div className={styles.gridHeader}>Products Updated</div>
+                            {results && shops.map((shop, index) => (
+                                <React.Fragment key={index}>
+                                    <div className={styles.gridItem}>{shop.name}</div>
+                                    <div className={styles.gridItem}>{shop.productCreated}</div>
+                                    <div className={styles.gridItem}>{shop.productUpdated}</div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {!results && shops.length > 0 && (
                     <div className={styles.textResults}>
                         <Typography variant="h4" className={styles.updateResultsTitle}>Products Update</Typography>
                         <ul>
-                            {!results && shops.map((shop, index) => (
+                            {shops.map((shop, index) => (
                                 <li key={index}>
                                     Shop: {shop.name}
-                                </li>
-                            ))}
-                            {results && shops.map((shop, index) => (
-                                <li key={index}>
-                                    Shop: {shop.name} | Products Updated: {shop.productCount}
                                 </li>
                             ))}
                         </ul>
@@ -133,7 +146,7 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog }) => 
             <DialogActions>
                 {!results && <Button
                     size="big"
-                    color="default"
+                    color="danger"
                     label={t('shopify:label.btnCancel.title')}
                     onClick={handleCancel}
                 />}
@@ -145,7 +158,7 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog }) => 
                 />}
                 {results && <Button
                     size="big"
-                    color="default"
+                    color="accent"
                     label={t('shopify:label.btnClose.title')}
                     onClick={handleCancel}
                 />}

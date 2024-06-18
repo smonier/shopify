@@ -2,11 +2,14 @@ package org.jahia.se.modules.shopify.models;
 
 public class Shop {
     private String name;
-    private int productCount;
+    private int productCreated;
+    private int productUpdated;
 
-    public Shop(String name, int productCount) {
+
+    public Shop(String name, int productCreated, int productUpdated) {
         this.name = name;
-        this.productCount = productCount;
+        this.productCreated = productCreated;
+        this.productUpdated = productUpdated;
     }
 
     public String getName() {
@@ -17,11 +20,19 @@ public class Shop {
         this.name = name;
     }
 
-    public int getProductCount() {
-        return productCount;
+    public int getProductCreated() {
+        return productCreated;
     }
 
-    public void setProductCount(int productCount) {
-        this.productCount = productCount;
+    public void setProductCreated(int productCreated) {
+        this.productCreated = productCreated;
+    }
+
+    public int getProductUpdated() {
+        return productUpdated;
+    }
+
+    public void setProductUpdated(int productUpdated) {
+        this.productUpdated = productUpdated;
     }
 }

@@ -76,7 +76,8 @@ public class RequestShopifyProductsUpdate extends Action {
         for (Shop shop : result.getShop()) {
             JSONObject shopJson = new JSONObject();
             shopJson.put("name", shop.getName());
-            shopJson.put("productCount", shop.getProductCount());
+            shopJson.put("productCreated", shop.getProductCreated());
+            shopJson.put("productUpdated", shop.getProductUpdated());
             shopsArray.put(shopJson);
         }
         resp.put("shop", shopsArray);
@@ -96,7 +97,9 @@ public class RequestShopifyProductsUpdate extends Action {
         int resultCode = HttpServletResponse.SC_BAD_REQUEST;
         final String shopName = node.getPropertyAsString("shopName");
         List<String> shopNameList = new ArrayList<>();
-        Map<String, Integer> shopProductCounts = new HashMap<>();
+        Map<String, Integer> shopProductCreated = new HashMap<>();
+        Map<String, Integer> shopProductUpdated = new HashMap<>();
+
 
         List<String> shopList = convertStringToList(shopName);
         LOGGER.info("shopList: " + shopList);
@@ -104,7 +107,9 @@ public class RequestShopifyProductsUpdate extends Action {
         for (String shop : shopList) {
             JCRNodeWrapper fileNode = getNodeByUUID(shop, session);
             shopNameList.add(fileNode.getDisplayableName());
-            shopProductCounts.put(fileNode.getDisplayableName(), 0);
+            shopProductCreated.put(fileNode.getDisplayableName(), 0);
+            shopProductUpdated.put(fileNode.getDisplayableName(), 0);
+
         }
 
         File csvFile = JCRContentUtils.downloadFileContent((JCRFileNode) node.getProperty("csvFile").getNode());
@@ -126,14 +131,14 @@ public class RequestShopifyProductsUpdate extends Action {
                                 String productDataJson = generateNewProductDataJson(product);
                                 shopifyService.createProduct(shop, productDataJson);
                                 resultCode = HttpServletResponse.SC_OK;
-                                shopProductCounts.put(shop, shopProductCounts.get(shop) + 1);
+                                shopProductCreated.put(shop, shopProductCreated.get(shop) + 1);
                             } else {
                                 List<Product> shopifyProducts = ProductDeserializer.fetchProductsFromJson(shopifyObject);
                                 for (Product shopifyProduct : shopifyProducts) {
                                     String productDataJson = generateProductDataJson(product, shopifyProduct);
                                     shopifyService.updateProduct(shop, shopifyProduct.getId(), productDataJson);
                                     resultCode = HttpServletResponse.SC_OK;
-                                    shopProductCounts.put(shop, shopProductCounts.get(shop) + 1);
+                                    shopProductUpdated.put(shop, shopProductUpdated.get(shop) + 1);
                                 }
                             }
                         }
@@ -146,9 +151,13 @@ public class RequestShopifyProductsUpdate extends Action {
 
         // Create JSON result structure
         List<Shop> shopListWithCounts = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : shopProductCounts.entrySet()) {
-            shopListWithCounts.add(new Shop(entry.getKey(), entry.getValue()));
+        for (Map.Entry<String, Integer> entry : shopProductCreated.entrySet()) {
+            String processedShopName = entry.getKey();
+            int productsCreated = entry.getValue();
+            int productsUpdated = shopProductUpdated.getOrDefault(processedShopName, 0);
+            shopListWithCounts.add(new Shop(processedShopName, productsCreated, productsUpdated));
         }
+
         ActionResponse updateResult = new ActionResponse(resultCode, shopListWithCounts);
 
         ObjectMapper objectMapper = new ObjectMapper();
