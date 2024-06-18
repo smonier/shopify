@@ -246,11 +246,12 @@ public class RequestShopifyProductsUpdate extends Action {
                 variantDetails.put("sku", productFromCsv.getVariantSku());
             }
         }
-        Map<String, Object> imageDetails = new HashMap<>();
-        imageDetails.put("src", productFromCsv.getImageSrc());
-
+        if (productFromCsv.getImageSrc() != null  && !productFromCsv.getImageSrc().isEmpty()) {
+            Map<String, Object> imageDetails = new HashMap<>();
+            imageDetails.put("src", productFromCsv.getImageSrc());
+            productDetails.put("images", new Object[]{imageDetails});
+        }
         productDetails.put("variants", new Object[]{variantDetails});
-        productDetails.put("images", new Object[]{imageDetails});
         productData.put("product", productDetails);
 
         // Serialize productData to JSON
