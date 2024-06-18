@@ -66,7 +66,7 @@
         <developerConnection>scm:dummy:uri</developerConnection>
     </scm>
     <properties>
-        <jahia-depends>default,content-editor=4.0.0</jahia-depends>
+        <jahia-depends>default</jahia-depends>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
         <yarn.arguments>build:production</yarn.arguments>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -94,7 +94,11 @@
         <artifactId>guice</artifactId>
         <version>4.2.3</version>
       </dependency>
-  
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
+        </dependency>
       <!-- JarArchiver Dependency (Example Version) -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -124,6 +128,11 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <_dsannotations>*</_dsannotations>
+                    </instructions>
+                </configuration>
             </plugin>
 
             <plugin>

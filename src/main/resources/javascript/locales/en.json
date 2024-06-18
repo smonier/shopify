@@ -1,15 +1,21 @@
 {
   "label": {
     "menu":"Shopify Products Update",
-    "requestShopifyProductsUpdate": "Request Product Update for <em>{{displayName}}</em>",
+    "requestShopifyProductsUpdate": "Product Update Request",
     "settings": {
       "title": "Shopify Products Update setting"
     },
     "action": {
       "title": "Shopify Products Update - How to extend the ui ?"
     },
-    "appsAccordion": {
-      "title": "Shopify Products Update"
+    "btnApply": {
+      "title": "Launch Update"
+    },
+    "btnCancel": {
+      "title": "Cancel Update"
+    },
+    "btnClose": {
+      "title": "Close"
     }
   },
   "automatedTextTags": {
