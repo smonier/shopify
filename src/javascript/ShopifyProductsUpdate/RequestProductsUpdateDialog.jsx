@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { Button, Typography } from '@jahia/moonstone';
 import PropTypes from 'prop-types';
@@ -7,15 +7,38 @@ import { useSiteInfo, useNodeInfo } from '@jahia/data-helper';
 import { useSelector } from 'react-redux';
 import { LoaderOverlay } from '../DesignSystem/LoaderOverlay';
 import styles from './RequestProductsUpdateDialog.scss';
+import {useQuery} from '@apollo/client';
+import {GetShops} from '../Utils/shops.gql-queries';
 
-export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog}) => {
+export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog }) => {
     const { t } = useTranslation('shopify');
     const { language, site } = useSelector(state => ({ language: state.language, site: state.site }));
     const { siteInfo, loading: siteLoading } = useSiteInfo({ siteKey: site, displayLanguage: language });
     const { node, loading: nodeLoading } = useNodeInfo({ path: path, language: language }, { getDisplayName: true });
-    const [data, setData] = useState(null);
+    const [shops, setShops] = useState([]);
     const [loadingQuery, setLoadingQuery] = useState(false);
     const [error, setError] = useState(null);
+    const [results, setResults] = useState(null);
+
+    const {data, errors, loading} = useQuery(GetShops, {
+        variables: {
+            path: path,
+            language: language
+        }
+    });
+
+    useEffect(() => {
+        if (data && data.jcr && data.jcr.result && data.jcr.result.shops && data.jcr.result.shops.refNodes) {
+            const fetchedShops = data.jcr.result.shops.refNodes.map((node, index) => ({
+                name: node.name
+            }));
+            setShops(fetchedShops);
+        }
+        if (errors) {
+            setError(errors[0].message);
+        }
+    }, [data, errors]);
+
 
     const handleCancel = () => {
         onCloseDialog();
@@ -46,16 +69,11 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog}) => {
             }
 
             if (results.resultCode === 200) {
-                const shops = results.shop;
-                let messageContent = "Products Update Results";
-                shops.forEach(shop => {
-                    console.log(`  Shop: ${shop.name}, Product Updated: ${shop.productCount}`);
-                    messageContent += `Shop: ${shop.name}, Product Updated: ${shop.productCount}`;
-                });
-
-                setData(messageContent);
+                setShops(results.shop || []); // Ensure results.shop is not null
+                setResults(results);
             } else {
-                setData(`Error: ${results.resultCode}`);
+                setShops([]);
+                setError(`Error: ${results.resultCode}`);
             }
         } catch (error) {
             console.error('Error updating Shopify products:', error);
@@ -71,7 +89,7 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog}) => {
         }
     };
 
-    if (siteLoading || !siteInfo || nodeLoading || !node) {
+    if (siteLoading || !siteInfo || nodeLoading || !node || loading) {
         return <LoaderOverlay status={true} />;
     }
 
@@ -90,24 +108,42 @@ export const RequestProductsUpdateDialog = ({ path, isOpen, onCloseDialog}) => {
                 </Typography>
             </DialogTitle>
             <DialogContent className={styles.dialogContent} classes={{ root: styles.dialogContent_overflowYVisible }}>
-                <LoaderOverlay status={loadingQuery} />
-                {data && <Typography>{data}</Typography>}
+                <div className={styles.loaderOverlayWrapper}>
+                    <LoaderOverlay status={loadingQuery} />
+                </div>
+                {shops.length > 0 && (
+                    <div className={styles.textResults}>
+                        <Typography variant="h4" className={styles.updateResultsTitle}>Products Update</Typography>
+                        <ul>
+                            {!results && shops.map((shop, index) => (
+                                <li key={index}>
+                                    Shop: {shop.name}
+                                </li>
+                            ))}
+                            {results && shops.map((shop, index) => (
+                                <li key={index}>
+                                    Shop: {shop.name} | Products Updated: {shop.productCount}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 {error && <Typography color="error">{error}</Typography>}
             </DialogContent>
             <DialogActions>
-                {!loadingQuery && <Button
+                {!results && <Button
                     size="big"
                     color="default"
                     label={t('shopify:label.btnCancel.title')}
                     onClick={handleCancel}
                 />}
-                {!loadingQuery && <Button
+                {!results && <Button
                     size="big"
                     color="accent"
                     label={t('shopify:label.btnApply.title')}
                     onClick={handleClick}
                 />}
-                {loadingQuery && <Button
+                {results && <Button
                     size="big"
                     color="default"
                     label={t('shopify:label.btnClose.title')}

@@ -1,7 +1,7 @@
 {
   "label": {
     "menu":"Shopify Products Update",
-    "requestShopifyProductsUpdate": "PRoduct Update Request",
+    "requestShopifyProductsUpdate": "Product Update Request",
     "settings": {
       "title": "Shopify Products Update setting"
     },

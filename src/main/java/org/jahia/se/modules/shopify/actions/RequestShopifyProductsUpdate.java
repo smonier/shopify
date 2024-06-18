@@ -23,6 +23,7 @@ import org.jahia.services.content.decorator.JCRFileNode;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -40,8 +41,6 @@ import org.apache.commons.csv.CSVRecord;
 public class RequestShopifyProductsUpdate extends Action {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestShopifyProductsUpdate.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private static int productCount = 0;
 
     @Activate
     public void activate() {
@@ -67,12 +66,27 @@ public class RequestShopifyProductsUpdate extends Action {
     public ActionResult doExecute(final HttpServletRequest request, final RenderContext renderContext,
                                   final Resource resource, final JCRSessionWrapper session, Map<String, List<String>> parameters,
                                   final URLResolver urlResolver) throws Exception {
-        final JSONObject resp = new JSONObject();
 
         ActionResponse result = updateProductsFromCSV(resource.getNode(), session, request);
+        JSONObject resp = new JSONObject();
         resp.put("resultCode", result.getResultCode());
-        resp.put("shop", result.getShop());
+
+        // Creating JSON array for shops
+        JSONArray shopsArray = new JSONArray();
+        for (Shop shop : result.getShop()) {
+            JSONObject shopJson = new JSONObject();
+            shopJson.put("name", shop.getName());
+            shopJson.put("productCount", shop.getProductCount());
+            shopsArray.put(shopJson);
+        }
+        resp.put("shop", shopsArray);
+
+        // Logging the JSON object
         LOGGER.info(resp.toString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(Collections.singletonMap("updateResult", Collections.singletonList(result)));
+        LOGGER.info(jsonString);
+
         return new ActionResult(result.getResultCode(), null, resp);
     }
 

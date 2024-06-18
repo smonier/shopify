@@ -12,6 +12,7 @@ const RequestProductsUpdateComponent = ({ render: Render, path, ...otherProps })
     const { node, loading: nodeLoading } = useNodeInfo({ path: path, language: language }, { getDisplayName: true });
 
     if (!node) {
+        console.error("Error retreiving Node");
         return null; // Optionally, handle loading state or errors here.
     }
 
