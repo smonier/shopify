@@ -1,6 +1,7 @@
 {
   "name": "@jahia/shopify",
   "version": "1.0.0",
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "build": "yarn webpack",
     "webpack": "webpack",
@@ -39,6 +40,7 @@
     "@apollo/client": "^3.10.4",
     "@apollo/react-hooks": "^3.1.4",
     "@babel/plugin-proposal-export-default-from": "^7.12.1",
+    "@emotion/react": "^11.11.4",
     "@jahia/data-helper": "^1.0.0",
     "@jahia/design-system-kit": "^1.1.8",
     "@jahia/icons": "^1.1.1",
@@ -48,6 +50,7 @@
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.1",
     "@material-ui/lab": "^3.0.0-alpha.30",
+    "@mui/material": "^5.15.20",
     "ckeditor4-react": "^1.1.0",
     "dayjs": "1.8.21",
     "formik": "1.5.8",
@@ -85,7 +88,7 @@
     "@babel/preset-react": "^7.9.4",
     "@cyclonedx/webpack-plugin": "^3.6.1",
     "@jahia/eslint-config": "^1.1.0",
-    "@jahia/moonstone": "^1.0.0",
+    "@jahia/moonstone": "2.4.16",
     "@jahia/stylelint-config": "^0.0.3",
     "@jahia/test-framework": "^1.1.5",
     "@storybook/addon-actions": "^5.3.18",

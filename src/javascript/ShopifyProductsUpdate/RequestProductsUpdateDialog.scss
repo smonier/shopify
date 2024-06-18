@@ -1,0 +1,112 @@
+.dialogTitle {
+  margin: 0 10px;
+
+  color: #373c42;
+}
+
+.dialogSubTitle {
+  margin: 10px;
+
+  color: #525c65;
+}
+
+.dialogContent {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+
+  padding: 40px 0 !important;
+
+  border-top: 1px solid #e0e6ea;
+  border-bottom: 1px solid #e0e6ea;
+
+  &.dialogContent_overflowYVisible {
+    overflow-y: visible;
+  }
+}
+
+.warningText {
+  flex-grow: 1;
+
+  color: #525c65;
+}
+
+.warningIcon {
+  color: #f6d62f;
+}
+
+.label {
+  padding: 0 10px;
+
+  font-weight: bold;
+}
+
+.copyFromLabel {
+  margin-left: 24px;
+  padding: 0 10px;
+
+  font-weight: bold;
+}
+
+.language {
+  margin-right: 16px;
+}
+
+div.dialog_overflowYVisible {
+  overflow-y: visible;
+}
+
+.loaderOverlayWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.textResults {
+  margin: 16px 0;
+
+  ul {
+      list-style-type: disc; /* Ensure bullet points are displayed */
+      margin-left: 20px; /* Adjust as needed for indentation */
+      padding-left: 20px; /* Adjust as needed for indentation */
+  }
+
+  li {
+      margin-bottom: 8px; /* Space between list items */
+  }
+
+  .updateResultsTitle {
+      color: rgb(0, 160, 227); /* Example color */
+      margin-bottom: 16px; /* Space below the title */
+      margin-left: 10px; /* Adjust as needed for indentation */
+      font-weight: bold; /* Bold text */
+      font-size: 16px;
+  }
+  .gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columns of equal width */
+    gap: 16px; /* Space between grid items */
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove default padding */
+    margin-left: 20px; /* Adjust as needed for indentation */
+  }
+  
+  .gridHeader {
+    font-weight: bold;
+    background-color: #e0e0e0; /* Optional: background color for header */
+    padding: 10px;
+    border: 1px solid #ccc; /* Optional: border around items */
+    border-radius: 4px; /* Optional: rounded corners */
+  }
+  
+  .gridItem {
+    padding: 10px;
+    border: 1px solid #ccc; /* Optional: border around items */
+    border-radius: 4px; /* Optional: rounded corners */
+    background-color: #f9f9f9; /* Optional: background color */
+  }
+  
+}
+
